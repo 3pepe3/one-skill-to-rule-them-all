@@ -2,9 +2,9 @@
 
 **The meta-skill that builds and improves all your skills, including itself.**
 
-Creating Claude skills is powerful but time-consuming. And the skills that do get built stay frozen — they never learn from how you actually use them.
+Creating skills is powerful but time-consuming. And the skills that do get built stay frozen — they never learn from how you actually use them.
 
-Task Observer fixes both problems. It's a Claude skill that runs alongside your work, watches what you do, and does two things:
+Task Observer fixes both problems. It's a skill that runs alongside your work, watches what you do, and does two things:
 
 1. **Creates new skills for you** — it spots repeating patterns in your work and drafts skill candidates automatically, so you get skills without the upfront effort of writing them from scratch
 2. **Improves your existing skills** — it notices corrections you make, preferences you express, and gaps in your current skills, then suggests specific updates
@@ -15,7 +15,7 @@ You work normally. It watches. Your skill library grows and gets better over tim
 
 Task Observer monitors your work sessions and looks for three things:
 
-1. **Corrections and adjustments** — if you adjust Claude's output or steer it in a different direction, that's a signal that a skill could be clearer or more complete
+1. **Corrections and adjustments** — if you adjust the AI's output or steer it in a different direction, that's a signal that a skill could be clearer or more complete
 2. **Gaps no skill covers yet** — if you're doing something manually that could be systematised, the observer flags it as a candidate for a new skill
 3. **Its own blind spots** — the observer watches itself too, capturing improvements to its own methodology as you use it
 
@@ -23,7 +23,7 @@ At the end of each session, it produces a structured observation log: what it no
 
 ## Who it's for
 
-You don't need to be a developer. If you use Claude skills in any capacity — for writing, research, client work, analysis, content creation, anything — and you want those skills to get better over time instead of staying frozen, this is for you.
+You don't need to be a developer. If you use skills in any capacity — for writing, research, client work, analysis, content creation, anything — and you want those skills to get better over time instead of staying frozen, this is for you.
 
 It's particularly valuable if you've built multiple skills and want a systematic way to maintain and improve them without manually auditing each one. But it's equally useful if you have zero skills — the observer will start identifying and drafting them for you.
 
@@ -33,11 +33,13 @@ No configuration required to get started. Drop the SKILL.md into your skills dir
 
 The observer doesn't modify your skills directly. It produces recommendations that you review. You stay in control of what changes and when.
 
-**In Cowork:** Full experience. The observer writes observation logs to your filesystem, so improvements persist between sessions and can be actioned immediately.
+**In Claude Cowork:** Full experience. The observer writes observation logs to your filesystem, so improvements persist between sessions and can be actioned immediately.
 
 **In Claude.ai web/mobile:** Handoff doc mode. Since there's no filesystem access, the observer produces a structured handoff document at the end of your session that you can use to update your skills manually.
 
 ## Compatibility
+
+The best way to get started with this work setup in any environment is probably to grab the skill, readme and user guide, feed them to your AI and let it guide you towards the best setup for your particular environment - No matter which AI system you use. As long as skills are supported, you should be able to use this approach with some adjustments.
 
 **Tested and designed for:**
 - Claude Cowork (full experience with filesystem access)
@@ -47,7 +49,7 @@ The observer doesn't modify your skills directly. It produces recommendations th
 - Claude Code — the methodology and format should translate directly, but I haven't verified it in practice
 
 **Potentially compatible with caveats:**
-- Other Agent Skills-compatible platforms (Codex CLI, Gemini CLI, Cursor, etc.) — the skill uses Claude-centric concepts like `<available_skills>` and skill-creator references that other systems would need to interpret or adapt. The SKILL.md format is cross-platform, but the content assumes Claude's architecture
+- Other Agent Skills-compatible platforms (ChatGPT, Codex CLI, Gemini CLI, Cursor, etc.) — the skill uses Claude-centric concepts like `<available_skills>` and skill-creator references that other systems would need to interpret or adapt. The SKILL.md format is cross-platform, but the content assumes Claude's architecture.
 
 If you try it on another platform, please open an issue and tell me.
 
