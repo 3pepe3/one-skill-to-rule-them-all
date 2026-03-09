@@ -2,7 +2,7 @@
 
 This guide includes practical tips for getting value out of the meta-skill. It's based on my own daily usage of the skill across Claude Cowork, the web interface, and the mobile app.
 
-The best way to get started with this new work setup in any environment is probably to grab the skill, the user guide and the readme file and feed them to the AI of your choice. It should then be able to guide you towards best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
+The best way to get started with this new work setup in any environment is probably to grab the skill, the user guide and the readme file and feed them to the AI of your choice. It should then be able to guide you towards the best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
 
 The meta-skill was primarily designed for Cowork, so these tips focus on that environment. If you use the skill in other environments, I expect most of the ideas to still apply. Please just adapt them where needed. And if you could report back to me your experience in other environments, that would be amazing.
 
