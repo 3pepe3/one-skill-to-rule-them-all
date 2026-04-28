@@ -26,6 +26,15 @@ Once you start your first task in Cowork after installing the meta-skill, make s
 
 I started with an empty folder just for Claude Cowork, and it turned into a thriving knowledge base within days. If you prefer to give Claude access to a folder that already has files in it, that's also fine: no risk, no fun.
 
+### What gets stored where
+
+The meta-skill writes only to its own subdirectories of your shared folder:
+
+- `[your shared folder]/skill-observations/` — the observation log, the cross-cutting principles file, and an archive of resolved observations
+- `[your shared folder]/skill-updates/` — staged versions of skill updates that are waiting for you to install them
+
+Existing files in your shared folder are not modified by the observer. If you point the meta-skill at a folder that already contains client work or personal documents, those files stay where they are; the observer only reads from them when you ask Claude to use them in a task. Skill updates are also never installed automatically — they're staged in `skill-updates/` for you to review and install yourself.
+
 ## Checking whether the skill has loaded
 
 Once you've started a Cowork task by giving your first instructions or some context about the work, you can check in the right sidebar which skills have been invoked. If you think the current task has skill creation or improvement potential but you don't see the task observer, ask Claude directly why the skill hasn't loaded. It should then guide you towards a better setup.

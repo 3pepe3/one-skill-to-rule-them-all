@@ -23,6 +23,8 @@ Task Observer monitors your work sessions and looks for three things:
 
 At the end of each session, it produces a structured observation log: what it noticed, which skills are affected, and specific suggested improvements. You review, approve, and your skills evolve.
 
+Some observations reveal patterns that aren't specific to one skill. These get captured as **cross-cutting principles** in a separate file — and new skills are automatically checked against them whenever they're created or updated. The more you use the system, the higher the quality floor across your whole skill library.
+
 ## Who it's for
 
 You don't need to be a developer. If you use skills in any capacity (for writing, research, client work, analysis, content creation, anything) and you want those skills to get better over time instead of staying frozen, this is for you.
@@ -35,9 +37,9 @@ It's particularly valuable if you've built multiple skills and want a systematic
 
 The observer doesn't modify your skills directly. It produces recommendations that you review. You stay in control of what changes and when.
 
-**In Claude Cowork (including Dispatch) or Claude Code in the desktop app:** Full experience. The observer writes observation logs to your filesystem, so improvements persist between sessions and can be actioned easily.
+**In Claude Cowork (including Dispatch) or Claude Code in the desktop app:** Full experience. The observer writes observation logs to your filesystem, so improvements persist between sessions and can be actioned easily. Observations land in `[your shared folder]/skill-observations/`; proposed skill updates land in `[your shared folder]/skill-updates/`. You don't normally need to look at these directly — Claude handles them — but they're there if you want to inspect what's been captured.
 
-**In Claude.ai web or or Claude Chat in the desktop app / mobile app:** Handoff doc mode. Since there's no filesystem access, the observer produces a structured handoff document at the end of your session that you can use to update your skills manually.
+**In Claude.ai web or Claude Chat in the desktop app / mobile app:** Handoff doc mode. Since there's no filesystem access, the observer produces a structured handoff document at the end of your session that you can use to update your skills manually.
 
 ## Compatibility
 
@@ -62,7 +64,7 @@ If you try it on another platform, please let me know how it goes. Issues and pu
 2. Read the user guide at [https://github.com/rebelytics/one-skill-to-rule-them-all/blob/main/USER-GUIDE.md](https://github.com/rebelytics/one-skill-to-rule-them-all/blob/main/USER-GUIDE.md)
 3. Make sure that the skill loads in all sessions where it's needed (I solved this via an instruction in my CLAUDE.md file)
 4. Try to remember to ask "Any observations logged" when you finish a session (I do this every time I archive a session). Often, the skill then finds additional improvement potential that it didn't log before.
-5. Schedule a recurring review session that applies all open obervations. Mine runs Monday, Wednesday and Friday morning, but you should adapt this to your needs.
+5. Schedule a recurring review session that applies all open observations. Mine runs Monday, Wednesday and Friday morning, but you should adapt this to your needs.
 
 ## The self-improving part
 
