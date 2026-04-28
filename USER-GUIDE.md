@@ -1,8 +1,8 @@
 # Getting Started with the task-observer meta-skill (aka "One skill to rule them all")
 
-This guide includes practical tips for getting value out of the meta-skill. It's based on my own daily usage of the skill across Claude Cowork, the web interface, and the mobile app.
+This guide includes practical tips for getting value out of the meta-skill. It's based on my own daily usage of the skill across Claude Cowork, the web interface, Claude Code (only via the desktop app) and the mobile app. I've been using this skill for three months now and it has logged and applied more than 600 improvements across my 40 skills, all of which were themselves created based on observations by the meta-skill.
 
-The best way to get started with this new work setup in any environment is probably to grab the skill, the user guide and the readme file and feed them to the AI of your choice. It should then be able to guide you towards the best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
+The best way to get started with this new work setup in any environment is probably to grab the skill, the user guide and the readme file from the repo and feed them to the AI of your choice. It should then be able to guide you towards the best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
 
 The meta-skill was primarily designed for Cowork, so these tips focus on that environment. If you use the skill in other environments, I expect most of the ideas to still apply. Please just adapt them where needed. And if you could report back to me your experience in other environments, that would be amazing.
 
@@ -25,8 +25,6 @@ I developed the first versions of this skill in the Claude web interface before 
 Once you start your first task in Cowork after installing the meta-skill, make sure that you select a shared folder. For the skill to work in its current form, you always need to use the same folder.
 
 I started with an empty folder just for Claude Cowork, and it turned into a thriving knowledge base within days. If you prefer to give Claude access to a folder that already has files in it, that's also fine: no risk, no fun.
-
-**Important:** Always select the folder at the beginning of every task. At the time of writing, I'm not aware of a way to add the folder after the task has started. This is an annoying limitation and I often have to create a handoff doc and start a new task because I forget to add the folder at the beginning of a task.
 
 ## Checking whether the skill has loaded
 
@@ -84,11 +82,9 @@ Now, since Claude Cowork introduced scheduled tasks, I have an automatic skill r
 
 Claude has a built-in skill called `skill-creator` that handles the actual building and restructuring of skills. The task observer and the skill creator work hand in hand: the observer identifies what to build or improve, and the creator handles how.
 
-Every time I feel like there are enough observations to act on, I start a quick skill improvement session in a Cowork task. I just tell Claude that I think it's time to improve a certain skill, or all skills that have observations waiting. Claude then creates updated versions that I can review before uploading them via Settings → Capabilities.
-
 ## Making the skill your own
 
-If the skill isn't working the way you want (too passive, too aggressive, too passive-aggressive, missing things, surfacing things you don't care about) start editing it. This is now your meta-skill and you can adjust it however you like.
+If the skill isn't working the way you want (too passive, too aggressive, too passive-aggressive, missing things, surfacing things you don't care about) start editing it. This is now YOUR meta-skill and you can adjust it however you like.
 
 The easiest way to improve the skill is by talking about it directly with Claude. Explain what's not working and how it could work better. Claude and the meta-skill itself will guide you towards a better version.
 
