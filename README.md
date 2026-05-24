@@ -1,16 +1,16 @@
-# One Skill to Rule Them All
+# task-observer - One Skill to Rule Them All
 
 ## The meta-skill that builds and improves all your skills, including itself.
 
-In the first three months of using this meta-skill, it **logged and applied over 600 improvements across my 40 skills**, all of which were themselves created based on observations by the meta-skill.
+In the first three months of using this meta-skill, it **logged and applied over 600 improvements across my 40 skills**, most of which were themselves created based on observations by the meta-skill.
 
-This meta-skill, called "task-observer", is a practical application of the [Augmented Expertise](https://www.rebelytics.com/augmented-expertise/) methodology, an AI framework for knowledge workers.
+This meta-skill, called "task-observer", is a practical application of the [Augmented Expertise](https://www.rebelytics.com/augmented-expertise/) methodology, an AI framework for knowledge workers. However, users have reported successful integrations into their Hermes and Openclaw setups, so it works equally well with autonomous agents.
 
 ## Why you should use this meta-skill
 
-Creating skills is powerful but time-consuming. And the skills that do get built stay frozen: they never learn from how you actually use them.
+Creating skills is powerful but time-consuming. But the skills that do get built stay frozen: they never learn from how you actually use them.
 
-Task Observer fixes both problems. It's a skill that runs alongside your work, watches what you do, and does two things:
+Task Observer fixes those problems. It's a meta-skill that runs alongside your work, watches what you do, and does two things:
 
 1. **Creates new skills for you** — it spots repeating patterns in your work and drafts skill candidates automatically, so you get skills without the upfront effort of writing them from scratch
 2. **Improves your existing skills** — it notices corrections you make, preferences you express, and gaps in your current skills, then suggests specific updates
@@ -31,17 +31,19 @@ Task Observer monitors your work sessions and looks for three things:
 2. **Gaps no skill covers yet** — if you're doing something manually that could be systematised, the observer flags it as a candidate for a new skill
 3. **Its own blind spots** — the observer watches itself too, capturing improvements to its own methodology as you use it
 
-At the end of each session, it produces a structured observation log: what it noticed, which skills are affected, and specific suggested improvements. You review, approve, and your skills evolve.
+During each session, it produces a structured observation log: what it noticed, which skills are affected, and specific suggested improvements. You review, approve, and your skills evolve.
 
-Some observations reveal patterns that aren't specific to one skill. These get captured as **cross-cutting principles** in a separate file — and new skills are automatically checked against them whenever they're created or updated. The more you use the system, the higher the quality floor across your whole skill library.
+Some observations reveal patterns that aren't specific to one skill. These get captured as **cross-cutting principles** in a separate log — and new skills are automatically checked against them whenever they're created or updated. The more you use the system, the higher the quality floor across your whole skill library.
 
 The observer doesn't modify your skills directly. It produces recommendations that you review. You stay in control of what changes and when.
 
 ## Who it's for
 
-You don't need to be a developer. If you use skills in any capacity (for writing, research, client work, analysis, content creation, anything) and you want those skills to get better over time instead of staying frozen, this is for you.
+You don't need to be a developer. If you use skills in any capacity and you want those skills to get better over time instead of staying frozen, this is for you.
 
-It's particularly valuable if you've built multiple skills and want a systematic way to maintain and improve them without manually auditing each one. But it's equally useful if you don't have any skills yet: the observer will start identifying and drafting them for you.
+If you're a builder, you can easily integrate this skill, or even just the methodology, into your existing setup. Just point your agent at the repo and let it guide you towards the ideal implementation for your specific setup.
+
+The task observer is particularly valuable if you've built multiple skills and want a systematic way to maintain and improve them without manually auditing each one. But it's equally useful if you don't have any skills yet: the observer will start identifying and drafting them for you.
 
 ## How it works
 
@@ -51,7 +53,7 @@ It's particularly valuable if you've built multiple skills and want a systematic
 
 **In Claude Cowork (including Dispatch) or Claude Code in the desktop app:** Full experience. The observer writes observation logs to your filesystem, so improvements persist between sessions and can be actioned easily. Observations land in `[your shared folder]/skill-observations/`; proposed skill updates land in `[your shared folder]/skill-updates/`. You don't normally need to look at these directly — Claude handles them — but they're there if you want to inspect what's been captured.
 
-**In Claude.ai web or Claude Chat in the desktop app / mobile app:** Handoff doc mode. Since there's no filesystem access, the observer produces a structured handoff document at the end of your session that you can use to update your skills manually.
+**In Claude.ai web or Claude Chat in the desktop app / mobile app:** Handoff doc mode. Since there's no filesystem access, the observer produces a structured handoff document at the end of your session that you can use to update your skills in a dedicated session.
 
 ## Compatibility
 
@@ -63,15 +65,17 @@ It's particularly valuable if you've built multiple skills and want a systematic
 - Claude Code in the desktop app
 
 **Expected to work but untested:**
-- Claude Code without desktop app — the methodology and format should translate directly, but I haven't verified it in practice
+- Claude Code without desktop app — the methodology and format should translate directly, but I haven't verified it in practice - users have reported seamless experiences with this.
 
 **Versions for other environments created by users:**
 - Codex version by AllstarGER: [https://github.com/AllstarGER/one-skill-to-rule-them-all](https://github.com/AllstarGER/one-skill-to-rule-them-all)
+- Please get in touch if you've open-sourced an adaptation of the meta-skill for another system or environment. I'm happy to include it here.
 
 **Potentially compatible with caveats:**
 - Other skills-compatible platforms (ChatGPT, Gemini CLI, Cursor, etc.) — the skill uses Claude-centric concepts like `<available_skills>` and skill-creator references that other systems would need to interpret or adapt. The SKILL.md format is cross-platform, but the content assumes Claude's architecture.
+- Users have reported successful integrations into Openclaw and Hermes setups.
 
-If you try it on another platform, please let me know how it goes. Issues and pull requests welcome.
+If you try it in another environment, please let me know how it goes. Issues and pull requests welcome.
 
 ## Quick start
 
@@ -83,17 +87,18 @@ If you try it on another platform, please let me know how it goes. Issues and pu
 
 ## Contributing
 
-This is an early release. If you use it, I want to hear from you:
+This is an open-source project for the community. If you use it, I would love to hear from you:
 
 - **Bug reports and feature requests:** Open an issue
-- **Observations about the observer:** If the skill captures something interesting about its own behaviour, I'd love to see it
 - **Platform compatibility reports:** Tried it somewhere other than Claude? Tell me what happened
+- **Interesting use cases:** Have you come up with a creative way of using or improving the task observer?
+- **Integrations with other systems:** One user told me that they connected task observer to Obsidian. Do you have a similar story?
 
 ## License
 
 This work is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-You're free to use, adapt, and redistribute — even commercially — as long as you give appropriate credit: Link to the original repo (https://github.com/rebelytics/one-skill-to-rule-them-all/) and name the author (Eoghan Henn).
+You're free to use, adapt, and redistribute — even commercially — as long as you give appropriate credit: Link to the original repo (https://github.com/rebelytics/one-skill-to-rule-them-all/) and name the author (Eoghan Henn / rebelytics.com).
 
 ## Further reading
 
