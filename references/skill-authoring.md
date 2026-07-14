@@ -66,6 +66,15 @@ methodology, log it and suggest sharing it; if from the agent not following
 the skill's rules, acknowledge and correct.
 ```
 
+**Distribution-channel note:** the template's feedback routing assumes
+public-repo distribution. Only reference a repository URL once that
+repository actually exists — never write a reference to an artefact before
+the artefact exists. Until publication, route feedback to direct author
+contact only; when the skill is published, inject the repo URL at publish
+time. When an open-source skill is distributed privately (shared directly
+with a client rather than published), keep the direct-author-contact
+routing — a public-repo reference is wrong for that channel.
+
 ## Confidentiality layers
 
 The open-source/internal boundary is a confidentiality boundary; enforce it

@@ -45,8 +45,30 @@ firings within the window re-surface the offer). No scheduler available in
 this environment → skip silently.
 
 **Step 1 — load.** Archive entries resolved in *previous* sessions (see
-Archival on Write in SKILL.md). Read all OPEN observations and all active
-cross-cutting principles. If none of either: report "no open observations
+Archival on Write in SKILL.md). Read the observation log.
+
+Build the work queue from the structural identifiers, not from a status
+filter. The OPEN set is defined as: **status is literally OPEN, OR the
+observation has no Status line at all.** Concretely:
+
+1. Enumerate all `### Observation N:` headers first — this is the
+   authoritative list of entries in the log.
+2. For each header, classify the entry's status by looking for a
+   `**Status:**` line within its body. Treat a missing, blank, or any
+   non-ACTIONED / non-DECLINED status as OPEN.
+3. Never derive the work queue from a `grep '**Status:** OPEN'` alone.
+   Derive it from the header list minus the resolved (ACTIONED /
+   DECLINED) entries. A grep on an optional field silently drops every
+   entry missing that field — the review then confidently reports a
+   clean log while a backlog of untriaged observations is skipped.
+
+**Reconciliation guard:** before proceeding, assert that
+`count(### Observation headers) == count(status-classified entries)`.
+If the counts differ, the delta is statusless entries — surface and
+triage them (as OPEN) rather than proceeding as if the log were clean.
+
+Also read all active cross-cutting principles. If there are no OPEN
+observations and no outstanding principles: report "no open observations
 or outstanding principles", update the timestamp, and stop.
 
 **Step 2 — inventory skills.** List all skills (system prompt

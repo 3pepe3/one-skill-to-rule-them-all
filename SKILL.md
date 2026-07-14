@@ -111,8 +111,34 @@ an open-source skill (unless an internal skill is the right home).
 
 Append to the log **silently, within the same turn or the next** — never
 batch mentally for later; the act of writing is the enforcement mechanism.
-Checkpoint: after roughly every 3rd completed todo item, stop and flush any
-unlogged observations.
+
+**Mandatory observation checkpoint after every 3rd TodoWrite completion:** After
+marking the 3rd, 6th, 9th (etc.) TodoWrite item as completed in a session, you
+must **write to the log** — not merely pause to ask yourself a question. Either
+append any pending observations, or, if genuinely none have accumulated, append
+an explicit acknowledgement marker (a one-line `no observations` note for that
+checkpoint). The required action is a concrete log write; a remembered "ask
+whether" is not enforcement. This is a hard checkpoint, not a suggestion — the
+skill has demonstrated that softer "check when completing items" or "pause and
+ask" guidance gets lost during cognitively demanding analytical work, exactly
+when the most observations accumulate. The count doesn't need to be precise;
+the rule is: roughly every third completion, write to the log (observations or
+the acknowledgement marker). The write itself is the enforcement mechanism: it
+forces the mental check to surface as a recorded action, and it prevents the
+common failure mode where the skill is loaded but no observations are written
+until the user explicitly asks.
+
+**Deliverable-event flush:** Hard enforcement that hooks onto tool calls you are
+already making is the only reliable mechanism; soft prompts that rely on memory
+don't survive cognitive load during long substantive sessions (when the most
+insights surface). So tie observation-flushing to deliverable and workflow events
+that already involve a tool call. Whenever you present or render a major
+deliverable — `present_files`, a deck or PDF render, a staged skill file handed
+to the user — or complete a task/todo batch, flush any pending observations to
+the log at that moment, before moving on. These are natural, already-occurring
+checkpoints; piggy-backing the flush onto them means the write happens as a
+side effect of work you were doing anyway, rather than depending on a separate
+act of memory.
 
 **Numbering discipline (mandatory, every append):**
 
@@ -145,9 +171,45 @@ unlogged observations.
    pattern for shared logs written by parallel agents is
    check-then-act-then-verify.
 
+**Log-write safety — never let a mutation span entry boundaries:** When
+mutating the log programmatically (marking entries ACTIONED/DECLINED,
+archiving, renumbering), a greedy or DOTALL pattern over the whole file can
+silently swallow everything from one match to EOF. This has happened: a
+`.*$` under `re.S` over the multi-entry file captured from one entry's
+Status line to end-of-file and overwrote 16 later entries in a single
+substitution. The log is shared state across many entries; mutate it one
+bounded entry at a time and verify every mutation.
+
+1. **Isolate the target entry, or anchor to a single line.** Either split
+   the log on `### Observation N:` headers, edit the TARGET entry's chunk in
+   isolation, and reassemble — OR, for a status-only edit, use a strictly
+   line-anchored multiline substitution that cannot cross a newline, e.g.
+   `re.sub(r'(?m)^(\s*-?\s*)\*\*Status:\*\*.*$', ...)` (multiline `^...$`
+   bounds the match to one line). NEVER use a DOTALL/greedy pattern across
+   the multi-entry file.
+
+2. **Assert a structural invariant after every write.** Count
+   `### Observation` headers before and after the mutation. For a status-only
+   edit the count MUST be unchanged; for archival or append it must change by
+   exactly the expected number. Fail loudly if the count is off — a silent
+   mismatch means the write captured more than its target.
+
+3. **Keep the pre-write backup.** Copy `log.md` before any programmatic
+   mutation. This is what made full recovery trivial when the truncation
+   above occurred — it turned a destructive bug into a non-event.
+
+Principle: a log shared across many entries must be mutated one bounded
+entry at a time, and every mutation verified by a structural invariant
+(entry count) immediately afterwards. Backups turn a destructive bug into a
+non-event.
+
 **Format and insertion:** always `### Observation NNN:`, always appended to
 the END of the log, never mid-file, never alternative ID formats. One
-format, one insertion point.
+format, one insertion point. **Every new observation MUST include
+`**Status:** OPEN` as its first field — this is mandatory at write time, not
+optional.** Reviews classify entries by their Status line; an observation
+written without one is invisible to any status-filtered pass and risks being
+silently skipped instead of triaged.
 
 ```markdown
 ### Observation [N]: [Short descriptive title]
@@ -178,6 +240,30 @@ the Issue/Improvement fields may reference specifics for context, but the
 Principle must be fully generalised — no client names, domains, or details
 traceable to a real project. Full confidentiality layers for skill
 authoring: `references/skill-authoring.md`.
+
+## Referencing Observations
+
+When citing an observation by number — in conversation, in a review report,
+or from within another observation — the number must come from the entry's
+literal `### Observation N:` header line. Never cite an observation number
+that wasn't read from that header.
+
+- **Search-tool line numbers are positional metadata, not IDs.** `grep -n`
+  prefixes every match with a line number; when a match lands mid-entry
+  (e.g., on a Session context or Principle line rather than the header),
+  that line number is NOT the observation number. Resolve to the owning
+  header first — scan backwards from the matched line to the nearest
+  preceding `### Observation N:` header and take the number from there
+  (e.g., an awk backwards-scan, or re-grep for `^### Observation` and pick
+  the last header line before the match).
+- **Plausibility check (cheap second layer):** before quoting any
+  observation number, compare it against the known counter range — the
+  highest `### Observation N:` header in the log. A number outside that
+  range (e.g., citing #1365 when the log's counter is at #766) is almost
+  certainly a line number or other positional artefact misread as an ID.
+
+The general rule: IDs must come from the record's own identifier field,
+never from the positional metadata of the search tool that found it.
 
 ## Taxonomy (quick version)
 
@@ -223,11 +309,27 @@ suggested type; ask which to act on. Surface earlier when an observation
 needs user input to be complete, when a skill is actively producing wrong
 output, or when observations cluster on one skill.
 
+**Default to log-and-defer.** Surfacing an observation is not an invitation
+to act on it. The default is log-and-defer: state that the observation is
+logged for the next review, and stop. Reserve in-session application
+strictly for the two triggers already defined under "Acting on
+Observations" — an explicit user request that names the action, or
+correcting a skill that is producing wrong output in the current session.
+
+Do NOT routinely offer a binary "apply now vs leave for next review" choice
+when surfacing observations. For users who run regular reviews, that offer is
+unwanted friction repeated every session. If a user has expressed a standing
+preference to always defer to the next review, suppress the in-session
+"act now?" offer entirely rather than asking each time.
+
 **Self-check before surfacing:** observations were logged throughout the
 whole session (including discussion phases); logged silently; each follows
 Issue → Improvement → Principle; each is typed; existing-skill items name
-the section; no open-source Principle contains client-identifying info. Fix
-failures before surfacing.
+the section; no open-source Principle contains client-identifying info;
+every appended observation carries a Status line (`**Status:** OPEN` at
+write time) — a statusless entry is invisible to any status-filtered review
+pass, so if any observation lacks one, add it now. Fix failures before
+surfacing.
 
 ## Acting on Observations
 
@@ -252,6 +354,8 @@ same reference).
 | When do I observe? | The whole session, including feedback and reflection phases |
 | How do I log? | Silently, immediately, appended to the end, with the 3-step numbering discipline |
 | When do I surface? | End of session, or earlier if needed |
+| Status line? | Mandatory `**Status:** OPEN` as the first field of every new observation; reviews treat statusless entries as OPEN, never as nonexistent |
+| Citing an observation number? | Only from its literal `### Observation N:` header — `grep -n` line numbers are positional metadata, not IDs; sanity-check against the known counter range |
 | Open-source or internal? | Default open-source; the boundary is confidential |
 | Small fix or substantial? | Additive → apply directly; restructuring/new skill → `references/skill-authoring.md` |
 | Weekly review? | Trigger check at session start; procedure in `references/weekly-review.md` |
