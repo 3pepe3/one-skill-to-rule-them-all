@@ -47,16 +47,39 @@ configuration pins it elsewhere.
   behaviour, handoff-doc mode for storage-less environments, user-facing
   docs pointers. Load for setup questions or when there's no filesystem.
 
+These loads are mandatory steps, not suggestions: when an episode fires
+(review triggers → weekly-review; creating/editing a skill →
+skill-authoring; setup/no-filesystem → environments), load the file before
+proceeding — never improvise the episode from this core file. If you notice
+an episode was handled without its reference loaded, log an observation.
+
+**Bundle manifest:** this skill consists of `SKILL.md` plus the three
+reference files listed above. If a referenced file is missing, the install
+is incomplete: proceed using the rules in this file, tell the user which
+files are missing, and point them to the full bundle at the canonical
+source (for the published version, the repository in the attribution
+above).
+
 ## Session Start Protocol
 
 1. If `skill-observations/log.md` or `cross-cutting-principles.md` don't
    exist, create them (templates below / in the principles section of
-   `references/skill-authoring.md`).
+   `references/skill-authoring.md`). Also create
+   `skill-observations/last-review-date.txt` containing the literal value
+   `never` if it doesn't exist — never write a date into it at setup; a
+   date means a review actually ran.
 2. Scan OPEN observations and active principles; hold them in awareness,
    don't surface unprompted.
-3. Read `skill-observations/last-review-date.txt`. Missing or older than 7
-   days → load `references/weekly-review.md` and run the review before the
-   user's task. Otherwise proceed.
+3. Read `skill-observations/last-review-date.txt`. The value carries the
+   truth: a date = when the last review actually ran; `never` = no review
+   has run yet. A missing file is abnormal (step 1 creates it) — recreate
+   it with `never`, don't invent a date. If the value is `never` or older
+   than 7 days AND there are OPEN observations: in an interactive session,
+   offer the review in one line ("the observation backlog hasn't been
+   reviewed [in N days / yet] — run it now, or carry on with your task?")
+   and proceed with the user's task unless they opt in; never gate their
+   work on the review. Only a scheduled/autonomous run loads
+   `references/weekly-review.md` and runs the review unprompted.
 4. Once per session: if no CLAUDE.md (or equivalent) activation instruction
    for this skill exists, briefly suggest adding one (see
    `references/environments.md`). Skip if already configured.
@@ -166,9 +189,15 @@ act of memory.
 
 3. *Post-write verification:* after appending, count occurrences of the
    number; if >1, a parallel writer collided between check and write —
-   renumber your entry (the last occurrence) to max+1 via `sed`. Pre-write
-   catches stale reads; only a post-write check catches the race. The
-   pattern for shared logs written by parallel agents is
+   renumber YOUR entry to max+1. Identify your entry from your own append
+   operation (capture the file's line count immediately before and after
+   your `>>`; your entry starts at the old line count + 1) — do NOT
+   re-grep and take the last occurrence, which may be a colliding writer's
+   entry appended after yours. After any `sed` renumber, re-read the
+   affected line to confirm the substitution actually took effect — a
+   line-addressed `s///` whose target shifted finds no match and still
+   exits 0. Pre-write catches stale reads; only a post-write check catches
+   the race. The pattern for shared logs written by parallel agents is
    check-then-act-then-verify.
 
 **Log-write safety — never let a mutation span entry boundaries:** When
@@ -180,7 +209,19 @@ Status line to end-of-file and overwrote 16 later entries in a single
 substitution. The log is shared state across many entries; mutate it one
 bounded entry at a time and verify every mutation.
 
-1. **Isolate the target entry, or anchor to a single line.** Either split
+1. **Re-read and merge immediately before any write-back.** Any full-file
+   rewrite (archival, renumbering, reassembly from chunks) built from a
+   snapshot destroys whatever concurrent sessions appended after that
+   snapshot — the write-back succeeds, the victim gets no error, and the
+   loss is invisible. This has happened in production: a parallel session's
+   write-back erased two entries appended minutes earlier, hours after the
+   exact failure mode had been documented. So: take the snapshot, prepare
+   the mutation, then — immediately before writing — re-read the live log
+   and diff against the snapshot. If new entries appeared, merge them into
+   the write-back (or rebuild from the fresh read). Never write back a
+   stale snapshot.
+
+2. **Isolate the target entry, or anchor to a single line.** Either split
    the log on `### Observation N:` headers, edit the TARGET entry's chunk in
    isolation, and reassemble — OR, for a status-only edit, use a strictly
    line-anchored multiline substitution that cannot cross a newline, e.g.
@@ -188,20 +229,32 @@ bounded entry at a time and verify every mutation.
    bounds the match to one line). NEVER use a DOTALL/greedy pattern across
    the multi-entry file.
 
-2. **Assert a structural invariant after every write.** Count
-   `### Observation` headers before and after the mutation. For a status-only
-   edit the count MUST be unchanged; for archival or append it must change by
-   exactly the expected number. Fail loudly if the count is off — a silent
-   mismatch means the write captured more than its target.
+3. **Assert a structural invariant against the LIVE pre-write file.** Count
+   `### Observation` headers in the live file immediately before writing and
+   again after. For a status-only edit the count MUST be unchanged; for
+   archival or append it must change by exactly the expected number. The
+   baseline must be the live file at write time, NOT your session's earlier
+   snapshot — an invariant computed against a stale snapshot validates that
+   you wrote what you intended while still destroying what others wrote in
+   between. Fail loudly if the count is off.
 
-3. **Keep the pre-write backup.** Copy `log.md` before any programmatic
+4. **Keep the pre-write backup.** Copy `log.md` before any programmatic
    mutation. This is what made full recovery trivial when the truncation
    above occurred — it turned a destructive bug into a non-event.
 
+5. **Verify your entries SURVIVED, not just that they were written.** A
+   successful append proves nothing an hour later — a concurrent session's
+   write-back can silently delete it, and only the destroying session gets
+   any signal (none). Before surfacing observations at session end, grep
+   the log for every entry number this session wrote and confirm each still
+   exists exactly once; re-append any that are missing (with fresh numbers)
+   and log a meta-observation about the collision.
+
 Principle: a log shared across many entries must be mutated one bounded
-entry at a time, and every mutation verified by a structural invariant
-(entry count) immediately afterwards. Backups turn a destructive bug into a
-non-event.
+entry at a time; every rewrite must be based on a fresh read, verified by a
+structural invariant against the live pre-write file, and backed up. Writers
+must verify survival, not just successful writes — in a concurrent erase,
+the victim gets no error.
 
 **Format and insertion:** always `### Observation NNN:`, always appended to
 the END of the log, never mid-file, never alternative ID formats. One
@@ -275,12 +328,25 @@ requirements (attribution, licensing, structure): `references/skill-authoring.md
 
 ## Archival on Write
 
-On every log write, first move entries that were already ACTIONED or
-DECLINED in a *previous* session to
+On every log write, first move already-resolved entries to
 `skill-observations/archive/log-[YYYY-MM-DD].md` (preserving the log header
-in the archive). Entries resolved in the *current* session stay in the
-active log for one more cycle. The active log keeps its header, status key,
-all OPEN entries, and the just-resolved ones.
+in the archive). "Already resolved" is decided by date, read from the file:
+a resolved status MUST record its date — `ACTIONED (YYYY-MM-DD) — [what was
+done]` / `DECLINED (YYYY-MM-DD) — [reason]` — and archival moves only
+entries whose recorded date is before today. Entries resolved today stay in
+the active log until the next day, no matter which session resolved them:
+the grace period lives in the file, never in session memory, so it holds
+across parallel and subsequent sessions. A resolved entry with no readable
+date gets today's date added instead of being archived. The active log
+keeps its header, status key, all OPEN entries, and the same-day-resolved
+ones.
+
+Archival is a read-filter-rewrite — the highest-risk mutation the log
+undergoes, and the one that has destroyed concurrent appends in production.
+It MUST follow the full Log-write safety sequence above: backup, re-read
+the live log immediately before writing back and merge any entries that
+appeared since the snapshot, then verify the post-write header count equals
+the live pre-write count minus exactly the number of archived entries.
 
 ## Log Structure
 
@@ -289,8 +355,9 @@ all OPEN entries, and the just-resolved ones.
 
 Observations captured during task-oriented work.
 
-**Status key:** OPEN = not yet actioned | ACTIONED = skill updated/created |
-DECLINED = user decided not to pursue
+**Status key:** OPEN = not yet actioned | ACTIONED (YYYY-MM-DD) = skill
+updated/created | DECLINED (YYYY-MM-DD) = user decided not to pursue —
+resolved statuses always carry their resolution date
 
 ---
 
@@ -328,7 +395,10 @@ Issue → Improvement → Principle; each is typed; existing-skill items name
 the section; no open-source Principle contains client-identifying info;
 every appended observation carries a Status line (`**Status:** OPEN` at
 write time) — a statusless entry is invisible to any status-filtered review
-pass, so if any observation lacks one, add it now. Fix failures before
+pass, so if any observation lacks one, add it now. Finally, run the
+survival check (Log-write safety rule 5): grep the log for every entry
+number this session wrote and confirm each still exists exactly once — a
+concurrent session's write-back deletes silently. Fix failures before
 surfacing.
 
 ## Acting on Observations
@@ -358,5 +428,6 @@ same reference).
 | Citing an observation number? | Only from its literal `### Observation N:` header — `grep -n` line numbers are positional metadata, not IDs; sanity-check against the known counter range |
 | Open-source or internal? | Default open-source; the boundary is confidential |
 | Small fix or substantial? | Additive → apply directly; restructuring/new skill → `references/skill-authoring.md` |
+| Rewriting the log (archival/renumber/status)? | Backup → re-read live and merge → bounded mutation → verify count against live pre-write file → confirm own entries survived |
 | Weekly review? | Trigger check at session start; procedure in `references/weekly-review.md` |
 | No filesystem? | Handoff-doc mode — `references/environments.md` |

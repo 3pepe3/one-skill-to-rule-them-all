@@ -7,10 +7,14 @@ input. Two modes:
 - **Scheduled autonomous review (preferred):** a recurring task (e.g.
   Mon/Wed/Fri mornings) via the platform's scheduler. Runs without the user
   present and applies non-escalated observations autonomously.
-- **In-session 7-day fallback:** fires at session start when BOTH are true:
-  no scheduled review is registered (or none succeeded in 7+ days), AND
-  `skill-observations/last-review-date.txt` is missing or >7 days old.
-  Inform the user it's running; do Step 0 first.
+- **In-session 7-day fallback:** pending at session start when BOTH are
+  true: no scheduled review is registered (or none succeeded in 7+ days),
+  AND `skill-observations/last-review-date.txt` contains `never` or a date
+  more than 7 days old (a missing file is recreated with `never` — see
+  Session Start steps 1 and 3; the file's value is authoritative, a date
+  means a review actually ran). In an interactive session a pending
+  fallback surfaces as a one-line offer and runs only if the user opts in
+  (SKILL.md, Session Start step 3) — it never gates the user's task.
 
 ## Approval policy
 
@@ -30,7 +34,11 @@ generator.
 
 ## Steps
 
-**Step 0 — recommend scheduled setup (fallback mode only).** Check
+**Step 0 — recommend scheduled setup (fallback mode only).** Ordering
+guard: run Step 1's no-observations short-circuit FIRST — if there are no
+OPEN observations and no outstanding principles, skip Step 0 entirely and
+just update the timestamp. A brand-new install must never get a setup
+prompt before it has done any work. Otherwise: check
 `skill-observations/scheduled-review-decline.txt`: if under 30 days old and
 the fallback isn't firing repeatedly, skip. Check for a registered
 scheduled task (scheduler presence or
@@ -38,8 +46,13 @@ scheduled task (scheduler presence or
 offer to set one up. Yes → register via the platform scheduler (Cowork:
 `create-shortcut` / `set_scheduled_task`; terminal: cron), name it
 `weekly-skill-review`, use the draft prompt at
-`skill-observations/scheduled-task-draft.md` if present, then write today's
-date to `scheduler-registered.txt`. No → write today's date to
+`skill-observations/scheduled-task-draft.md` if present, then verify the
+registration actually succeeded (the scheduler lists the task, or the
+platform confirmed creation) BEFORE writing today's date to
+`scheduler-registered.txt`. If registration fails or can't be verified, do
+NOT write the marker — the marker would permanently suppress the fallback
+while no review ever runs. Tell the user registration failed and leave the
+fallback active. No → write today's date to
 `scheduled-review-decline.txt` (suppresses for 30 days; repeated fallback
 firings within the window re-surface the offer). No scheduler available in
 this environment → skip silently.
@@ -97,8 +110,11 @@ live. Follow the editing rules in `references/skill-authoring.md` (live
 file as base, staging, diff-before-overwrite).
 
 **Step 6 — mark ACTIONED.** Update each applied observation's status:
-`ACTIONED — Applied to [skill-name] (weekly review [date])`. Do NOT archive
-same-session — the next log write or next review's Step 1 archives them.
+`ACTIONED (YYYY-MM-DD) — Applied to [skill-name] (weekly review)`. The
+date immediately after the status word is load-bearing: archival is gated
+on it (entries archive only when it's before today), so a dateless mark
+breaks the cross-session grace period. Do NOT archive same-session — the
+next log write on a later day archives them.
 
 **Step 7 — timestamp.** Write today's date to
 `skill-observations/last-review-date.txt`.
@@ -133,9 +149,30 @@ Wait for the user to acknowledge before other work.
 
 ## Delivering updated skills
 
-Save each updated file to
-`[workspace folder]/skill-updates/[date]/[skill-name]/SKILL.md` and present
-it for review and installation (in Cowork, via `present_files` and its
-upload button). Do not edit skill files in place — nothing goes live until
-the user installs it. **Keep-two rule:** for any skill, keep only the two most
-recent date directories under `skill-updates/`; delete older ones.
+Save each updated skill to
+`[workspace folder]/skill-updates/[date]/[skill-name]/` — the FULL skill
+directory (SKILL.md plus references/, scripts/, assets/ where present),
+never SKILL.md alone — and present it for review and installation. In
+Cowork: via `present_files` and its upload button. In environments without
+a presentation tool (e.g. Claude Code CLI): report the staged path and a
+change summary in chat and let the user review and install from there.
+Never write to the live skill directly, even where the skills directory is
+writable — staging-only is a deliberate safety property of the review loop
+(nothing goes live without the user's sign-off), not a filesystem
+constraint. For any skill with
+supporting files, zip the staged directory into a `.skill` bundle and
+present the bundle; a bare SKILL.md install silently truncates a
+multi-file skill. Pre-delivery gate (two items, run as the last step
+before presenting): (1) grep the staged SKILL.md body for `references/`,
+`scripts/`, `assets/` paths and fail the delivery if any referenced file
+is missing from the staged set; (2) for multi-file skills, fail the
+delivery if the artefact being presented is bare file links rather than
+the `.skill` bundle. Sweep build artefacts (`__pycache__/`, `*.pyc`,
+`.DS_Store`, `.~lock.*`) before zipping and read the archive listing back
+after. When seeding staged
+copies from the read-only mount, `chmod -R u+w` the staged path first —
+the mount's read-only mode travels with the copy, for directories as
+well as files. Do not edit skill files in place — nothing goes live
+until the user installs it. **Keep-two rule:** for any skill, keep only
+the two most recent date directories under `skill-updates/`; delete
+older ones.

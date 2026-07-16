@@ -48,6 +48,17 @@ with credit — recommended default), **MIT** (code-heavy, permissive),
 derivatives), **GPL family** (strong copyleft). The author chooses; the
 requirement is that there is one.
 
+**Private client sharing** is a third channel with its own rights framing:
+a client-agnostic skill shared privately with one client is NOT open source
+and NOT internal. Keep the attribution block; replace the licence statement
+with a short usage notice (e.g., "shared privately for internal use; please
+don't redistribute without checking with the author"); no LICENSE file
+needed. All confidentiality sweeps still apply — other-client information
+must not leak even when the recipient is a known client. Do not treat "not
+internal" as "therefore open source": distribution channel determines the
+rights framing, not just the feedback routing (see the distribution-channel
+note below).
+
 ## Author Attribution Template
 
 ```markdown
@@ -118,13 +129,63 @@ in layers so any one catches what others miss:
    sections added to the live skill the same day; only a pre-merge diff
    caught it.)
 4. Stage every update to
-   `[workspace folder]/skill-updates/[date]/[skill-name]/SKILL.md` and
-   present it for review and installation — nothing goes live until the
-   user installs it.
-5. Match process rigour to the change: complex/open-source/uncertain design
+   `[workspace folder]/skill-updates/[date]/[skill-name]/` — the FULL
+   skill directory (SKILL.md plus references/, scripts/, assets/ where
+   present), never SKILL.md alone — and present it for review and
+   installation; nothing goes live until the user installs it. Where no
+   presentation/upload tool exists (e.g. Claude Code CLI), present the
+   staged path and a change summary in chat instead; staging-only applies
+   in every environment — it's the review loop's safety property, not a
+   filesystem constraint. For any
+   skill with supporting files, zip the staged directory into a `.skill`
+   bundle and present the bundle, never the bare SKILL.md: a single-file
+   delivery convention applied to a multi-file skill truncates it
+   silently (the install succeeds, the skill loads, and the missing
+   pieces only surface when a reference load or script call fails
+   mid-task). **Pre-delivery gate — two items, checked at the moment of
+   delivery, not just at drafting time:** (1) every `references/`,
+   `scripts/`, `assets/` path in the staged SKILL.md body has its file in
+   the staged set; (2) if the skill is multi-file, the delivery artefact
+   is the `.skill` bundle — bare file links fail this gate even when all
+   files are staged. (Reading this rule while drafting does not enforce
+   it at delivery; run the gate as the last step before presenting.)
+   Packaging hygiene: before zipping, sweep the staged tree for build
+   artefacts (`__pycache__/`, `*.pyc`, `.DS_Store`, `.~lock.*`) left by
+   in-session checks, and read the archive listing back after zipping —
+   the listing is the cheap verification that catches leaked artefacts.
+5. When seeding a staged copy by copying from the read-only mount, reset
+   write permissions immediately (`chmod -R u+w` on the staged path, or
+   `cp --no-preserve=mode`) — the mount's read-only mode travels with
+   the copy, for directories as well as files, and the follow-up edit
+   otherwise fails with a permission error.
+6. Match process rigour to the change: complex/open-source/uncertain design
    → use the skill-creator if available; internal skills with requirements
    already established in conversation → write directly, flagging
    substantial changes for review.
+
+## Verifying relocations and restructures
+
+When content is relocated verbatim (splits into core + references, merges,
+restructures), "nothing was lost" is checkable mechanically — but only with
+a two-tier check:
+
+1. Enumerate every added/moved line via `diff` of the old base vs the new
+   base.
+2. Exact-match each non-empty line against the restructured file set
+   (`grep -F`).
+3. For misses, substance-check via a distinctive mid-line substring before
+   concluding loss — most misses are container artifacts (heading-level
+   changes, list-to-prose adaptation, re-wrapped lines splitting a phrase
+   across newlines), not real losses.
+4. Word-count sanity check per file.
+
+One tier alone either misses losses (substance-only) or cries wolf
+(exact-only). Additionally, inventory the original's enforcement
+mechanisms (checkpoints, assertions, invariants, mandatory-write rules,
+defaults) as an explicit checklist — compression preferentially destroys
+enforcement machinery because it reads as redundancy — and sweep any "pure
+restructuring" change for net-new behaviour, which hides well in a large
+rewording diff.
 
 ## New skills
 
