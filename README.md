@@ -118,6 +118,32 @@ You're free to use, adapt, and redistribute — even commercially — as long as
 
 If you want to learn more about the methodology behind this skill, please read the [Augmented Expertise manifesto](https://www.rebelytics.com/augmented-expertise/).
 
+## Recommended by
+
+I would like to thank the following creators, platforms, publications, companies and kind people who have recommended task-observer to their audiences:
+
+- Dan Kornas: [https://x.com/DanKornas/status/2074370062031462787](https://x.com/DanKornas/status/2074370062031462787)
+- Kelli Hrivnak: [https://www.linkedin.com/posts/kellihrivnak_to-those-building-out-skills-in-claude-lets-share-7478433968837517312-UhPj/](https://www.linkedin.com/posts/kellihrivnak_to-those-building-out-skills-in-claude-lets-share-7478433968837517312-UhPj/)
+- Maverick Maltin: [https://www.tiktok.com/@maverickgpt/video/7661705764901227807](https://www.tiktok.com/@maverickgpt/video/7661705764901227807)
+- Claudia Faith: [https://levelupwithai.substack.com/p/this-is-how-you-use-claude-in-2026](https://levelupwithai.substack.com/p/this-is-how-you-use-claude-in-2026)
+- BehiSecc: [https://github.com/BehiSecc/awesome-claude-skills](https://github.com/BehiSecc/awesome-claude-skills)
+- Andrea Saez: [https://dreasaez.medium.com/your-ai-skills-are-silos-heres-how-to-fix-that-bdb04a507785](https://dreasaez.medium.com/your-ai-skills-are-silos-heres-how-to-fix-that-bdb04a507785)
+- Aashish Pahwa: [https://www.instagram.com/p/DXwqpPQj62s/](https://www.instagram.com/p/DXwqpPQj62s/)
+- Nick Saraev: [https://www.instagram.com/reels/DaN0yYtPzjY/](https://www.instagram.com/reels/DaN0yYtPzjY/)
+- Peter Griffin AI: [https://www.instagram.com/reels/DavN_06t105/](https://www.instagram.com/reels/DavN_06t105/)
+- Myriam Jessier: [https://www.linkedin.com/posts/myriamjessier_add-rigor-to-your-thinking-without-adding-share-7475808954376359936-WdwP/](https://www.linkedin.com/posts/myriamjessier_add-rigor-to-your-thinking-without-adding-share-7475808954376359936-WdwP/)
+- Victor Dorneanu: [https://brainfck.org/t/self-improving-agents/](https://brainfck.org/t/self-improving-agents/)
+- CORE.TODAY: [https://core.today/blog/task-observer-meta-skill](https://core.today/blog/task-observer-meta-skill)
+- KIMI: [https://www.kimi.com/resources/claude-code-skills](https://www.kimi.com/resources/claude-code-skills)
+- Tom Dörr: [https://x.com/tom_doerr/status/2072251701608784049](https://x.com/tom_doerr/status/2072251701608784049)
+- Vaibhav Sisinty: [https://x.com/VaibhavSisinty/status/2063290847723192610](https://x.com/VaibhavSisinty/status/2063290847723192610)
+- Evgeny Shkuratov: [https://www.instagram.com/reels/DaHqy6MApwN/](https://www.instagram.com/reels/DaHqy6MApwN/)
+- Surf Skills: [https://surfskills.surf/s/rebelytics/one-skill-to-rule-them-all/task-observer](https://surfskills.surf/s/rebelytics/one-skill-to-rule-them-all/task-observer)
+- Juan Pablo Rosso: [https://www.instagram.com/reels/Dayv8dvjeLi/](https://www.instagram.com/reels/Dayv8dvjeLi/)
+- Johannes Manske: [https://www.linkedin.com/posts/johannesmanske_vor-8-wochen-war-ki-noch-sparringspartner-share-7461096580809547777-0ty7/](https://www.linkedin.com/posts/johannesmanske_vor-8-wochen-war-ki-noch-sparringspartner-share-7461096580809547777-0ty7/)
+
+If I forgot to list your recommendation here, please let me know or submit it via a PR in the same format as the others.
+
 ## Security audit
 
 [![Oathe Security](https://img.shields.io/endpoint?url=https%3A%2F%2Faudit-engine.oathe.ai%2Fapi%2Fbadge%2Frebelytics%2Fone-skill-to-rule-them-all&style=for-the-badge&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nd2hpdGUnPjxwYXRoIGQ9J00xMiAyQzkuMjQgMiA3IDQuMjQgNyA3djNINmMtMS4xIDAtMiAuOS0yIDJ2OGMwIDEuMS45IDIgMiAyaDEyYzEuMSAwIDItLjkgMi0ydi04YzAtMS4xLS45LTItMi0yaC0xVjdjMC0yLjc2LTIuMjQtNS01LTV6bTMgMTBIOVY3YzAtMS42NiAxLjM0LTMgMy0zczMgMS4zNCAzIDN2M3onLz48L3N2Zz4=&labelColor=000000&cacheSeconds=3600)](https://oathe.ai/report/rebelytics/one-skill-to-rule-them-all)
