@@ -2,17 +2,17 @@
 
 ## The meta-skill that builds and improves all your skills, including itself.
 
-In the first three months of using this meta-skill, it **logged and applied over 600 improvements across my 40 skills**, most of which were themselves created based on observations by the meta-skill.
+In the first six months of using this meta-skill, it **logged and applied over 900 improvements across my 50 skills**, most of which were themselves created based on observations by the meta-skill.
 
 This meta-skill, called "task-observer", is a practical application of the [Augmented Expertise](https://www.rebelytics.com/augmented-expertise/) methodology, an AI framework for knowledge workers. However, users have reported successful integrations into their Hermes and Openclaw setups, so it works equally well with autonomous agents.
 
 ## Why you should use this meta-skill
 
-Creating skills is powerful but time-consuming. But the skills that do get built stay frozen: they never learn from how you actually use them.
+Creating skills is powerful but time-consuming. The skills that do get built stay frozen: they never learn from how you actually use them.
 
 Task Observer fixes those problems. It's a meta-skill that runs alongside your work, watches what you do, and does two things:
 
-1. **Creates new skills for you** — it spots repeating patterns in your work and drafts skill candidates automatically, so you get skills without the upfront effort of writing them from scratch
+1. **Identifies new skills for you** — it spots repeating patterns in your work and flags them as skill candidates, then helps you build them, so you get skills without staring at a blank page
 2. **Improves your existing skills** — it notices corrections you make, preferences you express, and gaps in your current skills, then suggests specific updates
 
 You work normally. It watches. Your skill library grows and gets better over time.
@@ -43,11 +43,25 @@ You don't need to be a developer. If you use skills in any capacity and you want
 
 If you're a builder, you can easily integrate this skill, or even just the methodology, into your existing setup. Just point your agent at the repo and let it guide you towards the ideal implementation for your specific setup.
 
-The task observer is particularly valuable if you've built multiple skills and want a systematic way to maintain and improve them without manually auditing each one. But it's equally useful if you don't have any skills yet: the observer will start identifying and drafting them for you.
+The task observer is particularly valuable if you've built multiple skills and want a systematic way to maintain and improve them without manually auditing each one. It's also useful if you don't have any skills yet: the observer will start identifying skill candidates for you and help you build them.
+
+One honest boundary: the formal observation log and review cycle pay off most as your skill library and usage grow — many skills, parallel sessions, scheduled reviews. If you run a small setup with a handful of skills, your AI system's built-in memory features may cover much of the same ground with less overhead, and editing a skill directly is quick. The observer's value compounds with scale: adopt it early if you expect your library to grow, or come back to it when direct editing stops feeling manageable.
 
 ## How it works
 
-**The best way to get started with this work setup in any environment is probably to grab the skill, readme and user guide, feed them to your AI and let it guide you towards the best setup for your particular environment** - No matter which AI system you use. As long as skills are supported, you should be able to use this approach with some adjustments. And even without skills, the methodology should work with any other type of knowledge base that your AI has access to.
+**The best way to get started with this work setup in any environment is to grab the skill, readme and user guide, feed them to your AI and let it guide you towards the best setup for your particular environment** - No matter which AI system you use. As long as skills are supported, you should be able to use this approach with some adjustments. And even without skills, the methodology should work with any other type of knowledge base that your AI has access to.
+
+## Installation
+
+The skill is a small bundle: `SKILL.md` plus three files in `references/` that are loaded on demand (this keeps the always-loaded part lean). Installing only SKILL.md works, but runs degraded — the skill will tell you which files are missing.
+
+**Get the files:** download the repo as a ZIP (Code → Download ZIP) or clone it, and keep `SKILL.md` and the `references/` folder together.
+
+**Claude (web interface, desktop app, mobile app, Cowork):** put `SKILL.md` and `references/` into one folder, zip that folder, and upload it via Settings → Capabilities. The skill is then available in all chats and in Cowork tasks.
+
+**Claude Code:** place the folder at `.claude/skills/task-observer/` (project-level) or in your user-level skills directory, preserving the `references/` subfolder.
+
+**Other systems:** keep the folder structure intact wherever your platform expects skills, and let your AI guide you (see "How it works" above).
 
 ## Claude environment notes
 
@@ -65,7 +79,7 @@ The task observer is particularly valuable if you've built multiple skills and w
 - Claude Code in the desktop app
 
 **Expected to work but untested:**
-- Claude Code without desktop app — the methodology and format should translate directly, but I haven't verified it in practice - users have reported seamless experiences with this.
+- Claude Code without desktop app — the methodology and format translate directly - users have reported seamless experiences with this.
 
 **Versions for other environments created by users:**
 - Codex version by AllstarGER: [https://github.com/AllstarGER/one-skill-to-rule-them-all](https://github.com/AllstarGER/one-skill-to-rule-them-all)
@@ -82,7 +96,7 @@ If you try it in another environment, please let me know how it goes. Issues and
 1. Read the user guide at [https://github.com/rebelytics/one-skill-to-rule-them-all/blob/main/USER-GUIDE.md](https://github.com/rebelytics/one-skill-to-rule-them-all/blob/main/USER-GUIDE.md)
 2. Give the content of this repo (skill, readme and user guide) to the AI system of your choice and let it guide you towards the ideal configuration for your individual setup.
 3. Make sure that the skill loads in all sessions where it's needed (I solved this via an instruction in my CLAUDE.md file)
-4. Try to remember to ask "Any observations logged?" when you finish a session (I do this every time I archive a session). Often, the skill then finds additional improvement potential that it didn't log before.
+4. Try to remember to ask "Any observations logged?" when you finish a session (I do this every time I archive a session). Sometimes, the skill then finds additional improvement potential that it didn't log before.
 5. Schedule a recurring review session that applies all open observations. Mine runs Monday, Wednesday and Friday morning, but you should adapt this to your needs.
 
 ## Contributing

@@ -1,24 +1,26 @@
 # Getting Started with the task-observer meta-skill (aka "One skill to rule them all")
 
-This guide includes practical tips for getting value out of the meta-skill. It's based on my own daily usage of the skill across Claude Cowork, the web interface, Claude Code (only via the desktop app) and the mobile app. I've been using this skill for three months now and it has logged and applied more than 600 improvements across my 40 skills, all of which were themselves created based on observations by the meta-skill.
+This guide includes practical tips for getting value out of the meta-skill. It's based on my own daily usage of the skill across Claude Cowork, the web interface, Claude Code (only via the desktop app) and the mobile app. I've been using this skill for six months now and it has logged and applied more than 900 improvements across my 50 skills, all of which were themselves created based on observations by the meta-skill.
 
-The best way to get started with this new work setup in any environment is probably to grab the skill, the user guide and the readme file from the repo and feed them to the AI of your choice. It should then be able to guide you towards the best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
+The best way to get started with this new work setup in any environment is to grab the skill, the reference files, the user guide and the readme file from the repo and feed them to the AI of your choice. It should then be able to guide you towards the best equivalent of this setup for your particular environment, no matter which system you use. As long as skills are supported, this approach should work with any AI system, with some adjustments.
 
-The meta-skill was primarily designed for Cowork, so these tips focus on that environment. If you use the skill in other environments, I expect most of the ideas to still apply. Please just adapt them where needed. And if you could report back to me your experience in other environments, that would be amazing.
+The meta-skill was primarily designed for Claude Cowork, so these tips focus on that environment. If you use the skill in other environments, I expect most of the ideas to still apply. Please just adapt them where needed. And if you could report back to me your experience in other environments, that would be amazing.
 
 The rest of this user guide focusses on Claude and specifically Claude Cowork, but again, most of this should be applicable to other environments.
 
 ## Where the skill runs
 
-Once you've uploaded the skill via Settings → Capabilities in your Claude account, it's available in all chats (web interface, mobile app, desktop app) and also in the Cowork and Code tabs of the desktop app. Its full potential can be exploited in Cowork tasks.
+The skill is a multi-file bundle: `SKILL.md` plus a `references/` folder that is loaded on demand. To install it, put both into one folder, zip that folder, and upload it via Settings → Capabilities in your Claude account. Uploading the bare SKILL.md alone results in a degraded install — the skill still works, but will tell you which files are missing (see the Installation section of the readme for other environments).
+
+Once you've uploaded the skill, it's available in all chats (web interface, mobile app, desktop app) and also in the Cowork and Code tabs of the desktop app. Its full potential can be exploited in Cowork tasks and Code sessions.
 
 ## Using the skill in chats
 
 You can use the meta-skill in regular chats, and I sometimes do: for example, when I start a conversation on my phone or via the web interface. The meta-skill will log observations during the conversation, but unlike in a Cowork session, it won't be able to write them to a shared storage.
 
-You'll need to ask for a handoff doc at the end of the session, or the skill might guide Claude to offer one proactively as the conversation winds down. You can then take that handoff doc to the next session or, even better, to a Cowork task.
+You'll need to ask for a handoff doc at the end of the session, or the skill might guide Claude to offer one proactively as the conversation winds down. You can then take that handoff doc to the next session or, even better, to a Cowork task or Code session.
 
-I developed the first versions of this skill in the Claude web interface before moving to Cowork, but the need for a shared storage was what pushed me there. If you see value in the meta-skill, it's likely that you'll end up using Cowork too.
+I developed the first versions of this skill in the Claude web interface before moving to Cowork, but the need for a shared storage was what pushed me there. If you see value in the meta-skill, but you're mainly using Chat, it's likely that you'll end up using Cowork too.
 
 ## Setting up your shared folder
 
@@ -79,9 +81,9 @@ It is always your own decision if you want to open-source any of your skills at 
 
 ## The weekly review (now possible via scheduled tasks)
 
-The skill has a built-in weekly review cycle. If more than 7 days have passed since the last review and there are open observations waiting, Claude will trigger a comprehensive review at the start of your next task-oriented session.
+The skill has a built-in weekly review cycle. If more than 7 days have passed since the last review and there are open observations waiting, Claude will offer to run a comprehensive review at the start of your next task-oriented session. It's a one-line offer, not an interruption: you can run the review right away or carry on with your task and let a later session (or a scheduled run) handle it.
 
-What to expect when it triggers: Claude pauses to cross-check all open observations against all your skills, checks whether cross-cutting principles are being followed everywhere, applies the improvements it can, and presents you with a summary of what changed and what needs your attention. It's thorough: the review covers your entire skill library, not just the skills mentioned in individual observations.
+What to expect when the review runs: Claude cross-checks all open observations against all your skills, checks whether cross-cutting principles are being followed everywhere, applies the improvements it can, and presents you with a summary of what changed and what needs your attention. It's thorough: the review covers your entire skill library, not just the skills mentioned in individual observations.
 
 I only ever reached this threshold once, because I normally update skills more regularly than once a week. But it's there as a safety net to make sure observations don't pile up indefinitely.
 
