@@ -33,6 +33,22 @@ suggestion to a sentence or two.
 task-observer and related skills independently from configuration; a broken
 chain silences all observation activity.
 
+**If CLAUDE.md (or the equivalent config) is governance-protected:** some
+setups guard shared config files with hooks or file-protection rules that
+deny agent edits. If an edit to the config is denied, never retry the same
+edit blindly and never attempt to bypass the guard — a denial is the
+governance system working as intended, and a silent skip is just as bad
+(the user believes activation is set up when only description-level
+matching is active). Surface the denial to the user and offer these
+fallbacks: (a) ask the user to paste the activation block into the file
+themselves; (b) if the user's environment provides its own
+temporary-authorization mechanism (a marker file, an environment variable,
+or similar), ask the user to authorize the edit through that mechanism and
+revoke it afterwards; (c) where the platform supports unguarded
+project-level instruction files, add the activation instruction there
+instead. Never assume unrestricted edit access to shared or
+governance-tracked config — many setups gate exactly those files.
+
 ## Compaction behaviour
 
 When context compacts mid-task, the CLAUDE.md structural trigger re-invokes
