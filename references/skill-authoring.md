@@ -28,6 +28,18 @@ re-reads the rules and checks its output against them before delivery. When
 creating or improving any skill ask: "Does it have rules? Does it have a
 mechanism to enforce them?" If not, add one.
 
+**Embedded commands are pre-flight items too — execute before you ship.**
+Prose rules and command snippets fail differently: a prose rule is
+re-interpreted in context on every run, so ambiguity can be caught at
+execution time; an embedded command runs verbatim, unattended, forever —
+and a subtly wrong command can read as correct on every re-read
+(`git log -1 --format=%cI --reverse` returns the NEWEST commit, because
+`-1` applies before `--reverse`, while the plausible reading is "oldest").
+Any command embedded in a skill must be executed once against real data,
+with its output inspected for plausibility, before the skill file is
+saved. An unverified snippet is among the highest-risk lines in a skill:
+it ships bugs that no re-read can catch.
+
 ## Lean Content
 
 A skill should contain only content that changes the agent's behaviour at

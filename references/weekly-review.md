@@ -16,6 +16,25 @@ input. Two modes:
   fallback surfaces as a one-line offer and runs only if the user opts in
   (SKILL.md, Session Start step 3) — it never gates the user's task.
 
+**Reachability — where does scheduled work actually run?** Scheduled mode
+requires the scheduling agent's execution environment to read and write
+the workspace folder. Persistence and execution context are independent
+axes: knowing where the state lives is not enough — check whether the
+scheduler runs somewhere that can reach it. Three regimes:
+
+1. **Shared filesystem** (e.g. Cowork's mounted folder): scheduled mode
+   works as described.
+2. **Local-only filesystem with a cloud scheduler** (e.g. remote routines
+   that run on hosted infrastructure): scheduled mode is physically broken
+   — the remote agent cannot read `skill-observations/` or stage updates
+   to `skill-updates/`. Do not register a routine. Recommend a recurring
+   calendar reminder plus a manual "run the skill review" trigger in a
+   local session, or syncing the observation log to storage the scheduler
+   can reach (e.g. a git repository it can clone).
+3. **Local-only filesystem with a local scheduler** (cron, Task Scheduler,
+   a terminal-resident loop): works, but the user must keep the local
+   agent runnable.
+
 ## Approval policy
 
 **Interactive (user present):** always present observations grouped by
@@ -42,7 +61,11 @@ prompt before it has done any work. Otherwise: check
 `skill-observations/scheduled-review-decline.txt`: if under 30 days old and
 the fallback isn't firing repeatedly, skip. Check for a registered
 scheduled task (scheduler presence or
-`skill-observations/scheduler-registered.txt`); if found, skip. Otherwise
+`skill-observations/scheduler-registered.txt`); if found, skip. Before
+offering, check reachability (see the regimes above): if the platform's
+scheduler runs where it cannot reach the workspace folder (regime 2), do
+NOT offer registration — recommend the calendar-reminder-plus-manual-
+trigger pattern instead, and skip the rest of this step. Otherwise
 offer to set one up. Yes → register via the platform scheduler (Cowork:
 `create-shortcut` / `set_scheduled_task`; terminal: cron), name it
 `weekly-skill-review`, use the draft prompt at
