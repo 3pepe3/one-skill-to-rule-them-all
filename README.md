@@ -113,7 +113,6 @@ Backups created by the installer can be used to restore pre-install versions.
 
 - [User guide](USER-GUIDE.md)
 - [Contributing](CONTRIBUTING.md)
-- [Design specification](docs/superpowers/specs/2026-09-02-codex-task-observer-distribution-design.md)
 
 ## Attribution and licence
 
