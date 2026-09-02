@@ -1,0 +1,32 @@
+{
+  "description": "Task Observer lifecycle hooks for Codex.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__PYTHON__ __SKILL_SCRIPT__ --state-root __STATE_ROOT__ session-start",
+            "timeout": 10,
+            "statusMessage": "Loading Task Observer",
+            "additionalContextLimit": 2000
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "__PYTHON__ __SKILL_SCRIPT__ --state-root __STATE_ROOT__ session-start",
+            "timeout": 10,
+            "statusMessage": "Loading Task Observer",
+            "additionalContextLimit": 2000
+          }
+        ]
+      }
+    ]
+  }
+}
