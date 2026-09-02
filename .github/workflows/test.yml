@@ -1,0 +1,39 @@
+name: Test Codex Task Observer
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Test installer
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s tests -v
+      - name: Test observer helper
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s skill/task-observer/tests -v
+      - name: Validate source bundle
+        run: python3 skill/task-observer/scripts/validate.py skill/task-observer
+      - name: Check isolated installation
+        run: python3 install.py --check --codex-home "$RUNNER_TEMP/codex-home"
+      - name: Check executable entrypoints
+        run: |
+          test -x install.py
+          test -x skill/task-observer/scripts/task_observer.py
+          test -x skill/task-observer/scripts/validate.py
+      - name: Reject generated artefacts and fixed home paths
+        run: |
+          test -z "$(find . -path ./.git -prune -o \( -name __pycache__ -o -name '*.pyc' \) -print)"
+          task_observer_private_root="${HOME%/}/"
+          ! grep -R -n --exclude-dir=.git --exclude='*.png' "$task_observer_private_root" .

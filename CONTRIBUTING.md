@@ -1,83 +1,64 @@
 # Contributing
 
-Thank you for using the skill and for taking the time to report what you
-found. This page describes how contributions have actually been handled,
-so you know what to expect.
+This fork is maintained as a focused Codex adaptation of Task Observer.
+Contributions should improve its observation model, Codex activation, review
+safety, installer, tests, or documentation without adding unrelated products,
+services, personal configuration, or project-specific policy.
 
-## Open an issue or a pull request — whichever you prefer
+## Before opening a change
 
-Both are welcome, and you are credited either way. Pick the one that
-costs you less:
+- Search existing issues and pull requests.
+- Keep one behavioural concern per change.
+- Explain the observed failure, the expected behaviour, and the evidence that
+  verifies the correction.
+- Preserve creator attribution, upstream provenance, and CC BY 4.0.
 
-- **An issue** is perfect when you have observed a failure, a gap or a
-  wrong assumption. The most useful reports say what happened, why the
-  current text did not prevent it, and — if you have one — what you think
-  the fix is. Many issues on this repository already contain the exact
-  wording that ended up in the skill.
-- **A pull request** is perfect when you have a tested change. Keep it
-  focused on one problem; say plainly whether it relocates existing text,
-  rewords it, or adds new behaviour, because those are reviewed
-  differently.
+Permanent changes to the upstream methodology may also be relevant to the
+[source project](https://github.com/rebelytics/one-skill-to-rule-them-all).
+This fork does not claim to be its canonical implementation.
 
-You do not need to do more than that. The maintainer turns issues into
-changes, rebases pull requests onto the current branch, merges, and
-releases. Nobody is asked to "send a PR instead" — a good report is a
-complete contribution.
+## Development checks
 
-Before filing, a quick search of existing issues *and* pull requests
-saves everyone a round trip: if something adjacent exists, reference it
-and say how yours differs.
+Use Python 3.11 or newer. No third-party package installation is required.
 
-## How you are credited
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
+  -s skill/task-observer/tests -v
+python3 skill/task-observer/scripts/validate.py skill/task-observer
+python3 install.py --check --codex-home /tmp/task-observer-check
+```
 
-- A **merged pull request** keeps your authorship on the commit.
-- An **issue that supplied the fix** — wording, a command, a design —
-  is implemented by the maintainer with a `Co-authored-by:` trailer
-  naming you, so the contribution shows on your profile.
-- An **issue that supplied the report** without a fix design gets a
-  `Reported-by:` trailer.
-- Where a pull request identifies a real problem but the maintainer
-  resolves it differently, the commit explains why and credits you as the
-  reporter.
+Run new behavioural tests before implementing their production change and
+confirm that they fail for the intended reason. Tests must exercise real
+filesystem results and CLI output rather than merely matching source text.
 
-Release notes mention contributors by handle. If you would rather not be
-credited, say so in the issue.
+## Privacy and scope gate
 
-## What kind of change goes where
+Tracked content must not contain personal filesystem paths, user configuration,
+observation records, credentials, project data, hook trust hashes, or identifying
+examples. Synthetic fixtures should be obviously synthetic and contain no real
+host or project values.
 
-- **Improvements to the core skill** — fixes, clarifications, missing
-  cases, portability, enforcement — are merged into the skill itself,
-  via a release branch that is run for a while before it reaches `main`.
-- **Permanent variants** — a port to another platform, a different
-  philosophy of what the skill should do — live best as a fork, linked
-  from the README so people can find them. A separate repository for
-  something that should converge splits the issues and the users; a
-  branch for something that will stay parallel does the same in reverse.
+The installer may add only:
 
-If you are not sure which yours is, open an issue and ask.
+- the `task-observer` skill;
+- Task Observer mutable state;
+- Task Observer `SessionStart` and `SubagentStart` handlers; and
+- `[features].hooks = true`.
 
-## How changes are reviewed
+It must preserve every unrelated hook and configuration value. Do not add
+approval, sandbox, model, MCP, plugin, authentication, project-trust, telemetry,
+or external-service settings.
 
-- A pull request is reviewed against **its own base branch**, not against
-  the maintainer's local install, which is usually ahead of the published
-  version. If that gap matters for your change, the maintainer pushes the
-  delta first and asks you to rebase.
-- A change that **rewords or relocates** existing text is checked for two
-  things separately: that the substance survived, and that the
-  *enforcement machinery* survived — checkpoints, assertions, mandatory
-  writes, defaults. Compression tends to remove enforcement first,
-  because it reads as repetition. Any net-new behaviour in a "pure
-  restructuring" change must be declared in the description; undeclared
-  behaviour changes are the one thing that delays a merge.
-- **Embedded commands are run, literally, from a clean shell** before
-  they are merged. If your change adds or edits a snippet, saying where
-  you ran it helps.
-- Nothing in the skill may require fetching an external URL at run time,
-  and nothing may contain information that identifies a real client or
-  project.
+## Pull requests
 
-## Licence
+Include:
 
-Contributions are accepted under the repository's licence (CC BY 4.0).
-By contributing you agree that your change is distributed under it, with
-credit as described above.
+- the failing test or behavioural reproduction;
+- the smallest change that addresses it;
+- complete test and validator output; and
+- a privacy scan of new public material.
+
+Do not include generated bytecode, cache directories, local state, installed
+skill copies, or installer backups.
