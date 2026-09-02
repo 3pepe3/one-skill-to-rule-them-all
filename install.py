@@ -392,6 +392,8 @@ def install(codex_home: Path, check: bool = False) -> InstallResult:
                 }[name]
                 _copy_backup(target, backup_root / relative)
 
+        codex_home_existed = codex_home.exists()
+        skills_parent_existed = skill_target.parent.exists()
         codex_home.mkdir(parents=True, exist_ok=True)
         try:
             _commit_targets(targets, temporary_root)
@@ -399,6 +401,16 @@ def install(codex_home: Path, check: bool = False) -> InstallResult:
             if backup_root is not None:
                 _remove_path(backup_root)
                 _prune_empty_parents(backup_root.parent, codex_home)
+            if not skills_parent_existed:
+                try:
+                    skill_target.parent.rmdir()
+                except OSError:
+                    pass
+            if not codex_home_existed:
+                try:
+                    codex_home.rmdir()
+                except OSError:
+                    pass
             raise
         return InstallResult(changed=changed, backup=backup_root, check=False)
 

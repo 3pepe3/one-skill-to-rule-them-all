@@ -337,6 +337,26 @@ class InstallerTests(unittest.TestCase):
 
         self.assertEqual(tree_snapshot(self.home), before)
 
+    def test_clean_write_failure_removes_created_target_directories(self) -> None:
+        installer = load_installer_module()
+        real_replace = os.replace
+
+        def fail_config_commit(source, destination):
+            source_path = Path(source)
+            destination_path = Path(destination)
+            if (
+                destination_path == self.home / "config.toml"
+                and "rollback" not in source_path.parts
+            ):
+                raise OSError("synthetic clean-install failure")
+            return real_replace(source, destination)
+
+        with mock.patch.object(installer.os, "replace", side_effect=fail_config_commit):
+            with self.assertRaisesRegex(installer.InstallerError, "rolled back"):
+                installer.install(self.home)
+
+        self.assertFalse(self.home.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
