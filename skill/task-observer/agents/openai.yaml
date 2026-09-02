@@ -1,0 +1,7 @@
+interface:
+  display_name: "Task Observer"
+  short_description: "Capture reusable skill-improvement evidence"
+  default_prompt: "Use $task-observer while completing this task and record reusable skill improvements."
+
+policy:
+  allow_implicit_invocation: true
