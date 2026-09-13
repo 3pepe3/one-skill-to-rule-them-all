@@ -18,8 +18,24 @@ at commit `510caad26c907793e48306262af216ff9f71c9f7`.
 - A conservative installer that merges configuration, creates backups, and
   rolls back a failed write.
 
-There is no turn-end hook, network integration, telemetry, external service,
-or automatic live-skill replacement.
+Automatic review/application is opt-in. There is no telemetry or external service.
+
+To enable scoped automatic application, run:
+
+```bash
+python3 install.py --enable-auto-apply --check
+python3 install.py --enable-auto-apply
+```
+
+This records local authorization in `task-observer/automation.json` and installs
+`Stop`, `SessionEnd`, and `PreCompact` hooks. Review and trust them in `/hooks`.
+`Stop` requests review in the current thread; exit and pre-compaction checkpoint
+pending work, and session activation resumes review. Hooks do not perform model
+review after exit or block compaction. Project-specific improvements go to their
+canonical project owners; global skills receive only portable guidance.
+Reinstallation preserves existing opt-in authorization. Set `enabled` to `false`
+in the local policy and reinstall to remove the optional observer hooks.
+Personal policies, observations and backups are never part of this repository.
 
 ## Requirements
 

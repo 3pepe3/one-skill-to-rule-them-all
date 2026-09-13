@@ -21,6 +21,14 @@ it is fresh; never let observation work override the user's current task.
 
 ## Fixed installation boundary
 
+The home skill is a generic observer for all projects. The central log is storage,
+not authority to move project rules into global skills. Before selecting a fix
+target, follow the scope routing in `references/review.md`: portable workflow
+improvements may be global; project-specific rules belong to their canonical
+project instructions, rule shards or skills. Application defects remain with
+their application owners. Keep project names, paths and state out of generic
+skill guidance; internal evidence and resolutions may retain exact local targets.
+
 Resolve the Codex home as `${CODEX_HOME:-$HOME/.codex}` at runtime:
 
 - Live skill: `${CODEX_HOME:-$HOME/.codex}/skills/task-observer`
@@ -64,8 +72,9 @@ separate requirements.
    review setup is also opt-in.
 
 The `SessionStart` hook covers `startup`, `resume`, `clear`, and `compact`;
-`SubagentStart` gives an optional collaborator the same state pointer. There is
-no turn-end hook, so the checkpoints below remain mandatory.
+`SubagentStart` gives an optional collaborator the same state pointer. Optional
+user-authorized `Stop` and `SessionEnd` automation is described in
+`references/automation.md`. Hooks do not replace the checkpoints below.
 
 ## Observe throughout the task
 
@@ -124,14 +133,15 @@ Default to log-and-defer. At the task boundary, summarize records created this
 session by ID and title, or say no observation was logged and why. Do not expose
 observation bodies unless the user asks for the review.
 
-Act only during an explicit review, on an explicit request to act on a named
-observation, or when an in-session skill failure is currently producing wrong
-output. Before any review, read `references/review.md`. Before creating or
+Act during an explicit review, under recorded opt-in automation authority, on an
+explicit request to act on a named observation, or when an in-session skill failure
+is currently producing wrong output. Before any review, read `references/review.md`. Before creating or
 editing a skill, read `references/skill-updates.md`.
 
 Every skill change starts from a fresh copy of the complete live skill and is
 written only under state-root staging. Never edit or replace a live skill
-without explicit user approval. When work is applied, update each affected
+without explicit user approval, including applicable recorded automation
+authorization. When work is applied, update each affected
 observation's status in the same turn; multi-skill observations are not
 actioned until every target has a recorded disposition.
 
@@ -155,7 +165,7 @@ Before delivering observer work:
 
 ## Command reference
 
-The helper provides `init`, `session-start`, `scan`, `log`, `checkpoint`,
+The helper provides `init`, `session-start`, `lifecycle`, `scan`, `log`, `checkpoint`,
 `archive`, and `status`. Put `--state-root` before the command. Use
 `--permission-mode plan` or `--read-only` to force non-mutation. Run the command
 with `--help` for argument details.

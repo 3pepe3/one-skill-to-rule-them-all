@@ -141,7 +141,7 @@ def merge_hooks(existing: dict[str, Any], observer: dict[str, Any]) -> dict[str,
         else:
             del merged_hooks[event]
 
-    for event in ("SessionStart", "SubagentStart"):
+    for event in observer["hooks"]:
         merged_hooks.setdefault(event, []).extend(deepcopy(observer["hooks"][event]))
     return merged
 
@@ -299,11 +299,30 @@ def _commit_targets(
         raise InstallerError(f"installation failed and was rolled back: {exc}") from exc
 
 
-def install(codex_home: Path, check: bool = False) -> InstallResult:
+def install(codex_home: Path, check: bool = False, enable_auto_apply: bool = False) -> InstallResult:
     codex_home = codex_home.expanduser().resolve()
     validate_source_skill()
     existing_hooks, existing_config = validate_existing_config(codex_home)
     observer_hooks = render_observer_hooks(codex_home)
+    policy_path = codex_home / STATE_ROOT / "automation.json"
+    policy = {}
+    if policy_path.exists():
+        try:
+            policy = json.loads(policy_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise InstallerError(f"invalid automation policy: {exc}") from exc
+        if not isinstance(policy, dict):
+            raise InstallerError("automation policy must be an object")
+    if enable_auto_apply:
+        policy.update(enabled=True, mode="root-review-and-install",
+                      authority="Explicit installer --enable-auto-apply option.",
+                      scope="Review and apply supported observations to their owning project instructions, rules or skills, or generic global skills for portable improvements. Stage, validate, drift-check and back up changes. Honor project authority and read-only constraints. No publication, background agents or plugin-cache edits.")
+    if policy.get("enabled") is True and policy.get("mode") == "root-review-and-install":
+        for event in ("Stop", "SessionEnd", "PreCompact"):
+            group = {"hooks": [{"type": "command", "command": observer_hooks["hooks"]["SessionStart"][0]["hooks"][0]["command"].removesuffix("session-start") + "lifecycle", "timeout": 3}]}
+            if event == "PreCompact":
+                group["matcher"] = "manual|auto"
+            observer_hooks["hooks"][event] = [group]
     merged_hooks = merge_hooks(existing_hooks, observer_hooks)
     hooks_text = json.dumps(merged_hooks, indent=2, ensure_ascii=False) + "\n"
     config_text = enable_hooks_feature(existing_config)
@@ -371,6 +390,14 @@ def install(codex_home: Path, check: bool = False) -> InstallResult:
             targets.append(("config", staged_config, config_target))
         if not state_target.exists():
             targets.append(("state", staged_state, state_target))
+        if enable_auto_apply:
+            policy_text = json.dumps(policy, indent=2) + "\n"
+            if not state_target.exists():
+                _write_text(staged_state / "automation.json", policy_text)
+            elif not policy_path.exists() or policy_path.read_text() != policy_text:
+                staged_policy = temporary_root / "automation.json"
+                _write_text(staged_policy, policy_text)
+                targets.append(("automation", staged_policy, policy_path))
 
         changed = tuple(name for name, _, _ in targets)
         if check:
@@ -389,6 +416,7 @@ def install(codex_home: Path, check: bool = False) -> InstallResult:
                     "hooks": Path("hooks.json"),
                     "config": Path("config.toml"),
                     "state": Path("task-observer"),
+                    "automation": Path("task-observer/automation.json"),
                 }[name]
                 _copy_backup(target, backup_root / relative)
 
@@ -417,6 +445,8 @@ def install(codex_home: Path, check: bool = False) -> InstallResult:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--enable-auto-apply", action="store_true",
+                        help="authorize scoped review/application and install Stop, SessionEnd and PreCompact hooks")
     parser.add_argument(
         "--codex-home",
         type=Path,
@@ -434,7 +464,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        result = install(args.codex_home, check=args.check)
+        result = install(args.codex_home, check=args.check, enable_auto_apply=args.enable_auto_apply)
     except InstallerError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

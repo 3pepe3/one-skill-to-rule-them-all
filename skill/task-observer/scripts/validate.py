@@ -176,15 +176,18 @@ def check_hooks(path: Path, failures: list[str]) -> None:
             if "task-observer/scripts/task_observer.py" not in command:
                 continue
             observer_events.add(event)
-            if event not in {"SessionStart", "SubagentStart"}:
+            if event not in {"SessionStart", "SubagentStart", "Stop", "SessionEnd", "PreCompact"}:
                 failures.append(f"task-observer command is configured for forbidden event {event}")
             if handler.get("type") != "command":
                 failures.append(f"task-observer {event} handler must use type=command")
-            if not command.endswith("session-start"):
-                failures.append(f"task-observer {event} command must invoke session-start")
+            expected = 'lifecycle' if event in {'Stop', 'SessionEnd', 'PreCompact'} else 'session-start'
+            if not command.endswith(expected):
+                failures.append(f"task-observer {event} command must invoke {expected}")
             limit = handler.get("additionalContextLimit")
-            if not isinstance(limit, int) or limit <= 0:
+            if event in {'SessionStart', 'SubagentStart'} and (not isinstance(limit, int) or limit <= 0):
                 failures.append(f"task-observer {event} additionalContextLimit must be positive")
+            if event == 'SessionEnd' and not 1 <= handler.get('timeout', 1) <= 3:
+                failures.append('task-observer SessionEnd timeout must be 1 through 3 seconds')
             if event == "SessionStart" and group.get("matcher") != "startup|resume|clear|compact":
                 failures.append("task-observer SessionStart matcher is incomplete")
     missing = {"SessionStart", "SubagentStart"} - observer_events

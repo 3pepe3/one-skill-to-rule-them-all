@@ -1,5 +1,16 @@
 # Task Observer for Codex: User Guide
 
+## Optional automatic application
+
+Install with `python3 install.py --enable-auto-apply` to authorize review and
+application within the recorded scope. Trust the new hooks in `/hooks`.
+The `Stop` hook requests a review when work is pending. `PreCompact` and
+`SessionEnd` preserve pending work for session activation to resume.
+Project-specific rules stay in the owning project; reusable guidance goes to
+global skills. Review includes staging, validation, backups and drift checks.
+To disable, set `enabled` to `false` in your local
+`task-observer/automation.json`, then rerun the installer without the option.
+
 Task Observer is a background discipline for improving skills from real work.
 It records reusable evidence while Codex completes the user's actual task, then
 keeps review and live installation under explicit user control.

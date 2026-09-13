@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from datetime import date, datetime, timezone
 import errno
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -566,7 +567,80 @@ def command_session_start(args: argparse.Namespace) -> int:
     ]
     if initialization in {"deferred", "read-only"}:
         parts.append("This context is non-mutating: scan existing state only and defer all writes.")
+    elif event_name != "SubagentStart" and automation_enabled(root) and (report['open'] or report['pending_updates']):
+        parts.append(AUTOMATIC_REVIEW_INSTRUCTION)
     print(" ".join(parts))
+    return 0
+
+
+AUTOMATIC_REVIEW_INSTRUCTION = (
+    "Task-observer root-review-and-install is explicitly enabled by the user. "
+    "Read automation.json and references/automation.md from the task-observer skill; "
+    "review pending record bodies and classify scope before choosing targets: "
+    "portable improvements go to generic global skills; project-specific fixes go to "
+    "that project's canonical instructions, rules or skills, not the home observer. "
+    "Apply supported improvements to the selected durable owners, "
+    "validate staged copies and install with drift checks, then record dispositions. "
+    "Use only this root thread; never launch another agent or edit plugin caches. "
+    "Honor current read-only mode and user task constraints. Do not mark unapplied records actioned."
+)
+
+
+def automation_enabled(root: Path) -> bool:
+    path = root / 'automation.json'
+    if not path.exists():
+        return False
+    try:
+        policy = json.loads(path.read_text(encoding='utf-8'))
+    except (ValueError, OSError):
+        return False
+    return isinstance(policy, dict) and policy.get('enabled') is True and policy.get('mode') == 'root-review-and-install'
+
+
+def command_lifecycle(args: argparse.Namespace) -> int:
+    root = normalized_state_root(args.state_root)
+    event = read_hook_event()
+    name = event.get('hook_event_name')
+    if name not in {'Stop', 'SessionEnd', 'PreCompact'}:
+        raise ObserverError('lifecycle requires Stop, SessionEnd or PreCompact')
+    if is_read_only(args, event) or not automation_enabled(root) or event.get('stop_hook_active'):
+        json_print({})
+        return 0
+    # Exit hooks are bounded to three seconds; never wait for a competing writer.
+    with (root / '.observer.lock').open('a+', encoding='utf-8') as lock:
+        try:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            json_print({})
+            return 0
+        report = scan_state(root, include_entries=True)
+        if report['malformed'] or report['errors'] or report['missing_sibling_check']:
+            raise ObserverError('observer records need repair before automatic review')
+        if not report['open'] and not report['pending_updates']:
+            json_print({})
+            return 0
+        digest = hashlib.sha256()
+        for entry in report['entries']:
+            if entry['status'] == 'open':
+                digest.update((root / 'observation-log' / entry['file']).read_bytes())
+        pending = root / 'skill-updates' / 'PENDING.md'
+        if pending.exists():
+            digest.update(pending.read_bytes())
+        fingerprint = digest.hexdigest()
+        atomic_replace_text(root / 'pending-review.json', json.dumps({
+            'open': report['open'], 'pending_updates': report['pending_updates'],
+            'fingerprint': fingerprint, 'event': name, 'status': 'review-required',
+        }, sort_keys=True) + '\n')
+        if name in {'SessionEnd', 'PreCompact'}:
+            json_print({})
+            return 0
+        session = hashlib.sha256(str(event.get('session_id', 'unknown')).encode()).hexdigest()
+        marker = root / 'lifecycle' / f'{session}.json'
+        if marker.exists() and marker.read_text().strip() == fingerprint:
+            json_print({})
+            return 0
+        atomic_replace_text(marker, fingerprint + '\n')
+        json_print({'decision': 'block', 'reason': AUTOMATIC_REVIEW_INSTRUCTION})
     return 0
 
 
@@ -581,6 +655,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     commands.add_parser("init", help="initialize canonical observer state")
     commands.add_parser("session-start", help="process a Codex lifecycle-hook event from stdin")
+    commands.add_parser("lifecycle", help="request root review on Stop or preserve pending work on SessionEnd")
     commands.add_parser("scan", help="scan active observation frontmatter only")
     commands.add_parser("status", help="report aggregate state and review freshness")
     commands.add_parser("archive", help="archive records resolved before today")
@@ -609,6 +684,7 @@ def main(argv: list[str] | None = None) -> int:
     handlers = {
         "init": command_init,
         "session-start": command_session_start,
+        "lifecycle": command_lifecycle,
         "scan": command_scan,
         "log": command_log,
         "checkpoint": command_checkpoint,

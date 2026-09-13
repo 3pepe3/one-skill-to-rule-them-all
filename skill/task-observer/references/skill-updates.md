@@ -3,6 +3,10 @@
 Read this before creating or editing any skill from an observation. Observation
 approval and live replacement are separate decisions.
 
+An applicable explicit `root-review-and-install` authorization described in
+`references/automation.md` covers both decisions within its recorded scope.
+Complete-copy staging, validation, drift checks and backups remain required.
+
 ## Staging invariant
 
 The live skill is the authority and is never the edit target. For each approved

@@ -72,6 +72,25 @@ def load_installer_module():
 
 
 class InstallerTests(unittest.TestCase):
+    def test_auto_apply_opt_in_is_preserved_and_can_be_disabled(self):
+        self.assertEqual(run_installer(self.home, '--enable-auto-apply', '--check').returncode, 0)
+        self.assertFalse(self.home.exists())
+        result = run_installer(self.home, '--enable-auto-apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        policy_path = self.home / 'task-observer/automation.json'
+        policy = json.loads(policy_path.read_text())
+        self.assertTrue(policy['enabled'])
+        hooks = json.loads((self.home / 'hooks.json').read_text())['hooks']
+        self.assertEqual(set(hooks), {'SessionStart', 'SubagentStart', 'Stop', 'SessionEnd', 'PreCompact'})
+        before = tree_snapshot(self.home)
+        self.assertEqual(run_installer(self.home).returncode, 0)
+        self.assertEqual(tree_snapshot(self.home), before)
+        policy['enabled'] = False
+        policy_path.write_text(json.dumps(policy))
+        self.assertEqual(run_installer(self.home).returncode, 0)
+        hooks = json.loads((self.home / 'hooks.json').read_text())['hooks']
+        self.assertEqual(set(hooks), {'SessionStart', 'SubagentStart'})
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.home = Path(self.temp.name) / "codex-home"
